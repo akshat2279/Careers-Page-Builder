@@ -4,12 +4,13 @@ import Company from "@/lib/models/Company";
 
 export async function GET(
   req: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     await connectDB();
-
-    const company = await Company.findOne({ slug: params.slug });
+    
+    const { slug } = await params;
+    const company = await Company.findOne({ slug });
 
     if (!company) {
       return NextResponse.json(
