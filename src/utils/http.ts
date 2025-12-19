@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getAuthToken, removeAuthToken } from "./auth";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const http = axios.create({
   baseURL: API_BASE_URL,
@@ -55,9 +55,4 @@ export async function put<T, D = unknown, P = unknown>(
   return response.data;
 }
 
-
-
-
-
 export default http;
-

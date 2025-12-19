@@ -2,10 +2,10 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { UseFormRegister, FieldErrors } from "react-hook-form";
 import { GripVertical, Trash2 } from "lucide-react";
+import { CompanySettingsFormData } from "@/validations/companySettingsSchema";
 import { Button } from "@/components/common/Button";
 import { InputWrapper } from "@/components/common/InputWrapper";
 import { TextareaWrapper } from "@/components/common/TextareaWrapper";
-import { CompanySettingsFormData } from "@/validations/companySettingsSchema";
 
 interface SortableContentSectionProps {
   id: string;
@@ -15,6 +15,9 @@ interface SortableContentSectionProps {
   onRemove: () => void;
 }
 
+/**
+ * Draggable content section component for company settings
+ */
 export function SortableContentSection({
   id,
   index,
@@ -76,6 +79,14 @@ export function SortableContentSection({
         rows={4}
         error={errors.contentSections?.[index]?.content}
         {...register(`contentSections.${index}.content`)}
+      />
+
+      <InputWrapper
+        label="Image URL (Optional)"
+        type="text"
+        placeholder="https://example.com/image.jpg"
+        error={errors.contentSections?.[index]?.imageUrl}
+        {...register(`contentSections.${index}.imageUrl`)}
       />
     </div>
   );

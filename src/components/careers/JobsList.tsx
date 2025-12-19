@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { debounce } from "lodash";
 import InfiniteScroll from "react-infinite-scroll-component";
 import useInfiniteScroll from "@/hooks/useInfiniteScrollLatest";
 import { getJobsList } from "@/services/jobs.service";
 import { LIST_RECORDS_LIMIT } from "@/utils/constanst";
+import { JOB_FILTER_OPTIONS } from "@/constants/messages";
 
 interface JobsListProps {
   isPreview?: boolean;
@@ -28,11 +30,28 @@ interface IJob {
   posted_days_ago: number;
 }
 
+/**
+ * Displays filterable and searchable job listings with infinite scroll
+ */
 export function JobsList({ isPreview = false }: JobsListProps) {
   const [searchValue, setSearchValue] = useState("");
+  const [debouncedSearchValue, setDebouncedSearchValue] = useState("");
   const [locationFilter, setLocationFilter] = useState("All Locations");
   const [jobTypeFilter, setJobTypeFilter] = useState("All Job Types");
   const [sortBy, setSortBy] = useState(true);
+
+  const debouncedSetSearch = useCallback(
+    debounce((value: string) => {
+      setDebouncedSearchValue(value);
+    }, 500),
+    []
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchValue(value);
+    debouncedSetSearch(value);
+  };
 
   const { data, loading, fetchData, hasMore, loadMore } = useInfiniteScroll<
     {
@@ -47,7 +66,7 @@ export function JobsList({ isPreview = false }: JobsListProps) {
   >({
     apiService: getJobsList,
     apiParams: {
-      search: searchValue.trim(),
+      search: debouncedSearchValue.trim(),
       location: locationFilter,
       jobType: jobTypeFilter,
       sortBy: sortBy.toString(),
@@ -57,7 +76,13 @@ export function JobsList({ isPreview = false }: JobsListProps) {
   useEffect(() => {
     fetchData(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchValue, locationFilter, jobTypeFilter, sortBy]);
+  }, [debouncedSearchValue, locationFilter, jobTypeFilter, sortBy]);
+
+  useEffect(() => {
+    return () => {
+      debouncedSetSearch.cancel();
+    };
+  }, [debouncedSetSearch]);
 
   if (isPreview) {
     return null;
@@ -74,7 +99,7 @@ export function JobsList({ isPreview = false }: JobsListProps) {
           type="text"
           placeholder="Search by title or department"
           value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
+          onChange={handleSearchChange}
           className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
           aria-label="Search jobs by title or department"
         />
@@ -86,12 +111,11 @@ export function JobsList({ isPreview = false }: JobsListProps) {
             className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
             aria-label="Filter by location"
           >
-            <option>All Locations</option>
-            <option>Berlin, Germany</option>
-            <option>Dubai, United Arab Emirates</option>
-            <option>Bangalore, India</option>
-            <option>Boston, United States</option>
-            <option>London, England, United Kingdom</option>
+            {JOB_FILTER_OPTIONS.LOCATIONS.map((location) => (
+              <option key={location} value={location}>
+                {location}
+              </option>
+            ))}
           </select>
 
           <select
@@ -100,11 +124,11 @@ export function JobsList({ isPreview = false }: JobsListProps) {
             className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
             aria-label="Filter by job type"
           >
-            <option>All Job Types</option>
-            <option>Tech</option>
-            <option>Non-Tech</option>
-            <option>Management</option>
-            <option>Design</option>
+            {JOB_FILTER_OPTIONS.JOB_TYPES.map((jobType) => (
+              <option key={jobType} value={jobType}>
+                {jobType}
+              </option>
+            ))}
           </select>
 
           <select
@@ -113,8 +137,11 @@ export function JobsList({ isPreview = false }: JobsListProps) {
             className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
             aria-label="Sort by"
           >
-            <option value="true">Latest Jobs</option>
-            <option value="false">Oldest Jobs</option>
+            {JOB_FILTER_OPTIONS.SORT_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
         </div>
       </div>

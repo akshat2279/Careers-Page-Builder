@@ -2,29 +2,41 @@
 
 import * as React from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
+import { ContentSection, BenefitCard } from "@/types/company";
 import { Button } from "../common/Button";
-import { ContentSection } from "@/types/company";
 import { JobsList } from "../careers/JobsList";
+import { PreviewJobsSection } from "./PreviewJobsSection";
+import { ArrowDown, Sparkles, Target, Heart } from "lucide-react";
+import { getEmbedUrl, isDirectVideoUrl } from "@/lib/videoUtils";
 
 interface CareersPreviewProps {
   name: string;
+  tagline?: string;
   logoUrl?: string;
   bannerUrl?: string;
   primaryColor: string;
   cultureVideoUrl?: string;
   contentSections: ContentSection[];
+  benefitCards: BenefitCard[];
   isPreview: boolean;
 }
 
+/**
+ * Renders the careers page preview with company branding and job listings
+ */
 export function CareersPreview({
   name,
+  tagline,
   logoUrl,
   bannerUrl,
   primaryColor,
   cultureVideoUrl,
   contentSections,
+  benefitCards,
   isPreview,
 }: CareersPreviewProps) {
+  const genericIcons = [Sparkles, Target, Heart];
   const jobsSectionRef = React.useRef<HTMLElement>(null);
 
   const scrollToJobs = React.useCallback(() => {
@@ -34,7 +46,7 @@ export function CareersPreview({
   }, []);
 
   const sortedSections = React.useMemo(
-    () => contentSections.sort((a, b) => a.order - b.order),
+    () => [...contentSections].sort((a, b) => a.order - b.order),
     [contentSections]
   );
 
@@ -48,68 +60,164 @@ export function CareersPreview({
     [bannerUrl, primaryColor]
   );
 
+  const embedVideoUrl = React.useMemo(
+    () => cultureVideoUrl ? getEmbedUrl(cultureVideoUrl) : "",
+    [cultureVideoUrl]
+  );
+
+  const isDirectVideo = React.useMemo(
+    () => cultureVideoUrl ? isDirectVideoUrl(cultureVideoUrl) : false,
+    [cultureVideoUrl]
+  );
   return (
-    <div className="min-h-full bg-background overflow-y-auto">
+    <div className="min-h-full bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900 overflow-y-auto scroll-smooth">
       <section
-        className="relative min-h-[40vh] flex items-center justify-center text-center px-4 py-12"
+        className="relative min-h-[60vh] flex items-center justify-center text-center px-4 py-16"
         style={bannerStyle}
         aria-label="Company header"
       >
-        {bannerUrl && <div className="absolute inset-0 bg-black/40" />}
+        {bannerUrl && <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60" />}
+        {!bannerUrl && (
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10" />
+        )}
 
-        <div className="relative z-10 max-w-3xl mx-auto space-y-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="relative z-10 max-w-4xl mx-auto space-y-6"
+        >
           {logoUrl && (
-            <div className="flex justify-center mb-4">
-              <div className="relative w-20 h-20 bg-white rounded-lg p-3 shadow-lg">
+            <motion.div 
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="flex justify-center mb-6"
+            >
+              <div className="relative w-24 h-24 bg-white rounded-2xl p-4 shadow-2xl ring-4 ring-white/20">
                 <Image
                   src={logoUrl}
                   alt={`${name} logo`}
                   fill
-                  sizes="80px"
+                  sizes="96px"
                   className="object-contain p-1"
                   priority
                 />
               </div>
-            </div>
+            </motion.div>
           )}
 
-          <h1 className="text-2xl md:text-4xl font-bold text-white">
-            Careers at {name || "Company"}
-          </h1>
+          {tagline && (
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.25 }}
+              className="text-lg md:text-xl text-white/90 font-medium italic"
+            >
+              {tagline}
+            </motion.p>
+          )}
 
-          <p className="text-base md:text-lg text-white/90 max-w-2xl mx-auto">
-            Build products that shape the future
-          </p>
-
-          <Button
-            onClick={scrollToJobs}
-            size="lg"
-            className="mt-4 text-sm md:text-base px-6 py-4"
-            aria-label="Scroll to open job positions"
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="text-3xl md:text-5xl lg:text-6xl font-bold text-white drop-shadow-lg"
           >
-            View Open Roles
-          </Button>
+            Careers at {name || "Company"}
+          </motion.h1>
+
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8"
+          >
+            <Button
+              onClick={scrollToJobs}
+              size="lg"
+              className="text-base px-8 py-6 bg-white text-gray-900 hover:bg-gray-100 shadow-xl"
+              aria-label="Scroll to open job positions"
+            >
+              View Open Roles
+              <ArrowDown className="ml-2 h-5 w-5" />
+            </Button>
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* Why Join Us Section */}
+      <section className="py-16 md:py-20 px-4 bg-white dark:bg-slate-900">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 
+              className="text-3xl md:text-4xl font-bold mb-4"
+              style={{ color: primaryColor }}
+            >
+              Why Join {name || "Us"}?
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Be part of something extraordinary
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {benefitCards.map((card, index) => {
+              const IconComponent = genericIcons[index % genericIcons.length];
+              return (
+                <div key={index} className="group relative overflow-hidden rounded-2xl border bg-card p-8 shadow-sm hover:shadow-xl transition-all">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-500/10 to-transparent rounded-full blur-2xl" />
+                  <div className="relative">
+                    <div className="mb-4 inline-flex p-3 rounded-xl" style={{ backgroundColor: `${primaryColor}10` }}>
+                      <IconComponent className="h-8 w-8" style={{ color: primaryColor }} />
+                    </div>
+                    <h3 className="text-xl font-bold mb-2">{card.title}</h3>
+                    <p className="text-muted-foreground">
+                      {card.description}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
 
       {cultureVideoUrl && (
         <section
-          className="py-8 md:py-12 px-4 bg-muted/30"
+          className="py-16 md:py-20 px-4 bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900"
           aria-label="Company culture"
         >
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold text-center mb-6">
-              Life at {name || "Company"}
-            </h2>
-            <div className="aspect-video rounded-lg overflow-hidden shadow-xl">
-              <iframe
-                src={cultureVideoUrl}
-                title={`${name} Company Culture Video`}
-                className="w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                loading="lazy"
-              />
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Life at {name || "Company"}
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                See what it&apos;s like to be part of our team
+              </p>
+            </div>
+            <div className="aspect-video rounded-2xl overflow-hidden shadow-2xl ring-1 ring-gray-200 dark:ring-gray-800">
+              {isDirectVideo ? (
+                <video
+                  src={cultureVideoUrl}
+                  controls
+                  className="w-full h-full object-cover"
+                  preload="metadata"
+                >
+                  Your browser does not support the video tag.
+                </video>
+              ) : (
+                <iframe
+                  src={embedVideoUrl}
+                  title={`${name} Company Culture Video`}
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  loading="lazy"
+                />
+              )}
             </div>
           </div>
         </section>
@@ -120,132 +228,103 @@ export function CareersPreview({
           {sortedSections.map((section, index) => (
             <section
               key={`${section.title}-${index}`}
-              className={`py-8 md:py-12 px-4 ${
-                index % 2 === 0 ? "bg-background" : "bg-muted/30"
+              className={`py-16 md:py-20 px-4 ${
+                index % 2 === 0 ? "bg-white dark:bg-slate-900" : "bg-slate-50 dark:bg-slate-950"
               }`}
               aria-labelledby={`section-${index}`}
             >
-              <div className="max-w-4xl mx-auto text-center">
-                <h2
-                  id={`section-${index}`}
-                  className="text-xl md:text-2xl font-bold mb-4"
-                >
-                  {section.title}
-                </h2>
-                <div className="prose prose-sm md:prose-base max-w-none mx-auto">
-                  <p className="text-sm md:text-base leading-relaxed whitespace-pre-wrap">
-                    {section.content}
-                  </p>
-                </div>
+              <div className="max-w-6xl mx-auto">
+                {section.imageUrl ? (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start">
+                    {/* Heading & Content Side */}
+                    <div className={`${index % 2 === 0 ? "lg:order-1" : "lg:order-2"} flex flex-col justify-start space-y-6`}>
+                      <div>
+                        <h2
+                          id={`section-${index}`}
+                          className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight"
+                          style={{ color: primaryColor }}
+                        >
+                          {section.title}
+                        </h2>
+                        <div className="w-20 h-1 rounded-full" style={{ backgroundColor: primaryColor }} />
+                      </div>
+                      <div className="prose prose-lg max-w-none">
+                        <p className="text-base md:text-lg leading-relaxed whitespace-pre-wrap text-muted-foreground">
+                          {section.content}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Image Side */}
+                    <div className={`${index % 2 === 0 ? "lg:order-2" : "lg:order-1"} flex items-center justify-center`}>
+                      <div className="relative w-full aspect-square max-w-md rounded-2xl overflow-hidden shadow-xl">
+                        <Image
+                          src={section.imageUrl}
+                          alt={section.title}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="max-w-4xl mx-auto text-center">
+                    <h2
+                      id={`section-${index}`}
+                      className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight"
+                      style={{ color: primaryColor }}
+                    >
+                      {section.title}
+                    </h2>
+                    <div className="flex justify-center mb-8">
+                      <div className="w-20 h-1 rounded-full" style={{ backgroundColor: primaryColor }} />
+                    </div>
+                    <div className="prose prose-lg max-w-none mx-auto">
+                      <p className="text-base md:text-lg leading-relaxed whitespace-pre-wrap text-muted-foreground">
+                        {section.content}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             </section>
           ))}
         </>
       )}
       {isPreview ? (
-        <section
-          ref={jobsSectionRef}
-          className="py-8 md:py-12 px-4 bg-background"
-          aria-labelledby="open-roles-heading"
-        >
-          <div className="max-w-6xl mx-auto">
-            <h2
-              id="open-roles-heading"
-              className="text-xl md:text-2xl font-bold mb-6 text-center"
-            >
-              Open Roles
-            </h2>
-
-            <div
-              className="mb-6 space-y-3"
-              role="search"
-              aria-label="Job search filters"
-            >
-              <input
-                type="text"
-                placeholder="Search by title"
-                className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
-                disabled
-                aria-label="Search jobs by title"
-              />
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <select
-                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
-                  disabled
-                  aria-label="Filter by location"
-                >
-                  <option>All Locations</option>
-                </select>
-
-                <select
-                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
-                  disabled
-                  aria-label="Filter by job type"
-                >
-                  <option>All Job Types</option>
-                </select>
-              </div>
-            </div>
-            <ul
-              className="space-y-3"
-              role="list"
-              aria-label="Available job positions"
-            >
-              <li>
-                <article className="p-4 md:p-6 rounded-lg border border-border bg-card hover:shadow-md transition-shadow">
-                  <h3 className="text-lg md:text-xl font-semibold mb-1">
-                    Frontend Engineer
-                  </h3>
-                  <p className="text-muted-foreground text-sm md:text-base">
-                    Bangalore • Full-time
-                  </p>
-                </article>
-              </li>
-
-              <li>
-                <article className="p-4 md:p-6 rounded-lg border border-border bg-card hover:shadow-md transition-shadow">
-                  <h3 className="text-lg md:text-xl font-semibold mb-1">
-                    Backend Engineer
-                  </h3>
-                  <p className="text-muted-foreground text-sm md:text-base">
-                    Remote • Full-time
-                  </p>
-                </article>
-              </li>
-            </ul>
-
-            <div
-              className="text-center py-8 text-muted-foreground"
-              role="status"
-            >
-              <p className="text-sm">More roles coming soon!</p>
-            </div>
-          </div>
-        </section>
+        <PreviewJobsSection jobsSectionRef={jobsSectionRef} />
       ) : (
         <section
           ref={jobsSectionRef}
-          className="py-8 md:py-12 px-4 bg-background"
+          className="py-16 md:py-20 px-4 bg-white dark:bg-slate-900"
           aria-labelledby="open-roles-heading"
         >
           <div className="max-w-6xl mx-auto">
-            <h2
-              id="open-roles-heading"
-              className="text-xl md:text-2xl font-bold mb-6 text-center"
-            >
-              Open Roles
-            </h2>
+            <div className="text-center mb-12">
+              <h2
+                id="open-roles-heading"
+                className="text-3xl md:text-4xl font-bold mb-4"
+                style={{ color: primaryColor }}
+              >
+                Open Roles
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                Find your perfect role and start your journey with us
+              </p>
+            </div>
             <JobsList />
           </div>
         </section>
       )}
 
-      <footer className="py-6 px-4 border-t border-border" role="contentinfo">
-        <div className="max-w-6xl mx-auto text-center text-muted-foreground text-sm">
-          <p>
-            © {new Date().getFullYear()} {name || "Company"}. All rights
-            reserved.
+      <footer className="py-12 px-4 bg-slate-50 dark:bg-slate-950 border-t border-border" role="contentinfo">
+        <div className="max-w-6xl mx-auto text-center">
+          <p className="text-muted-foreground mb-2">
+            © {new Date().getFullYear()} {name || "Company"}. All rights reserved.
+          </p>
+          <p className="text-sm text-muted-foreground/70">
+            Building the future, one hire at a time.
           </p>
         </div>
       </footer>

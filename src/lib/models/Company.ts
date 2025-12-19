@@ -14,8 +14,29 @@ const ContentSectionSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+    imageUrl: {
+      type: String
+    },
     order: {
       type: Number,
+      required: true
+    }
+  },
+
+);
+
+const BenefitCardSchema = new mongoose.Schema(
+  {
+    _id: {
+      type: mongoose.Schema.Types.ObjectId,
+      auto: true
+    },
+    title: {
+      type: String,
+      required: true
+    },
+    description: {
+      type: String,
       required: true
     }
   },
@@ -33,6 +54,9 @@ const CompanySchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true
+    },
+    tagline: {
+      type: String
     },
     logoUrl: {
       type: String
@@ -53,6 +77,10 @@ const CompanySchema = new mongoose.Schema(
     },
     contentSections: {
       type: [ContentSectionSchema],
+      default: []
+    },
+    benefitCards: {
+      type: [BenefitCardSchema],
       default: []
     }
   },

@@ -1,5 +1,5 @@
 import ApiResponse from "@/types/common";
-import axiosInstance from "@/utils/axios";
+import { http } from "@/utils/http";
 
 interface JobsParams {
   offset: number;
@@ -20,5 +20,5 @@ export const getJobsList = async (params: JobsParams): Promise<ApiResponse> => {
     ...(params.sortBy && { sortBy: params.sortBy }),
   });
 
-  return await axiosInstance.get(`/api/jobs?${queryParams.toString()}`);
+  return await http.get(`/api/jobs?${queryParams.toString()}`);
 };

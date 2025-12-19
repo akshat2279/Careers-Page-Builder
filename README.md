@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Careers Page Builder
 
-## Getting Started
+This is a take-home assignment project that lets companies create branded careers pages and allows candidates to browse jobs.
 
-First, run the development server:
+## What I Built
 
+Basically two main parts:
+1. **Recruiter side** - Login, customize company page (colors, logo, content sections), preview, and save
+2. **Candidate side** - Public careers page where people can browse jobs with filters and search
+
+## Tech Stack
+
+- Next.js 16 with App Router
+- React 19
+- MongoDB + Mongoose
+- TypeScript
+- Tailwind CSS
+- JWT for auth
+
+## Setup
+
+1. Clone and install:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repo-url>
+cd my-app
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Create `.env.local` file:
+```
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=some_random_secret_key
+NEXT_PUBLIC_API_URL=http://localhost:3000
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Run it:
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Go to http://localhost:3000
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## What Works
 
-## Deploy on Vercel
+- User signup/login with JWT
+- Company settings page with all customization options
+- Drag and drop for content sections
+- Preview modal
+- Public careers page with company branding
+- Job listing with filters, search, infinite scroll
+- Mobile responsive
+- Video embed support (YouTube, Vimeo, S3)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deployment
+
+Deployed on Vercel. Just connected the repo and added environment variables in Vercel dashboard.
+
+Live URL: [Add your Vercel URL here]

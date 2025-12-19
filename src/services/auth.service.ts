@@ -17,9 +17,13 @@ interface SignupResponse {
   error?: string;
 }
 
+/**
+ * Service for handling authentication operations
+ */
 class AuthService {
-  private baseURL = "/api/auth";
-
+  /**
+   * Authenticates user with email and password
+   */
   async login(email: string, password: string): Promise<LoginResponse> {
     try {
       const data = await post<LoginResponse>(endpoints.auth.LOGIN, { email, password });
@@ -33,6 +37,9 @@ class AuthService {
     }
   }
 
+  /**
+   * Registers a new user and company
+   */
   async signup(
     companyName: string,
     email: string,

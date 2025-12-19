@@ -3,34 +3,47 @@ import bcrypt from "bcryptjs";
 import connectDB from "@/lib/db";
 import User from "@/lib/models/User";
 import { generateToken } from "@/lib/jwt";
+import { ERROR_MESSAGES } from "@/constants/messages";
 
+/**
+ * Authenticates user and returns JWT token
+ */
 export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
+    
+    // Validate required fields
     if (!email || !password) {
       return NextResponse.json(
-        { error: "Missing credentials" },
+        { error: ERROR_MESSAGES.MISSING_CREDENTIALS },
         { status: 400 }
       );
     }
 
     await connectDB();
 
-    const user = await User.findOne({ email });
+    // Normalize email to lowercase for case-insensitive comparison
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // Find user by email
+    const user = await User.findOne({ email: normalizedEmail });
     if (!user) {
       return NextResponse.json(
-        { error: "Invalid email or password" },
+        { error: ERROR_MESSAGES.INVALID_CREDENTIALS },
         { status: 401 }
       );
     }
+    
+    // Verify password
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
       return NextResponse.json(
-        { error: "Invalid email or password" },
+        { error: ERROR_MESSAGES.INVALID_CREDENTIALS },
         { status: 401 }
       );
     }
 
+    // Generate JWT token
     const token = generateToken({
       userId: user._id.toString(),
       email: user.email,
@@ -48,7 +61,7 @@ export async function POST(req: Request) {
   } catch (err) {
     console.error("Login error:", err);
     return NextResponse.json(
-      { error: "Something went wrong" },
+      { error: ERROR_MESSAGES.SOMETHING_WENT_WRONG },
       { status: 500 }
     );
   }

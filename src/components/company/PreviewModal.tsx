@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { CareersPreview } from "./CareersPreview";
 import { CompanyData } from "@/types/company";
+import { CareersPreview } from "./CareersPreview";
 import { LOADING_MESSAGES } from "@/constants/messages";
 
 interface PreviewModalProps {
@@ -11,6 +11,9 @@ interface PreviewModalProps {
   previewData?: CompanyData;
 }
 
+/**
+ * Modal component for previewing careers page before publishing
+ */
 export function PreviewModal({
   isOpen,
   onClose,
@@ -61,12 +64,14 @@ export function PreviewModal({
         {previewData ? (
           <CareersPreview
             name={previewData.name}
+            tagline={previewData.tagline}
             logoUrl={previewData.logoUrl}
             bannerUrl={previewData.bannerUrl}
             primaryColor={previewData.primaryColor}
             cultureVideoUrl={previewData.cultureVideoUrl}
             contentSections={previewData.contentSections}
-            isPreview={false}
+            benefitCards={previewData.benefitCards}
+            isPreview={true}
           />
         ) : (
           <div className="flex items-center justify-center h-full">

@@ -3,22 +3,22 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
-import { useToast } from "@/hooks/useToast";
-import { Toaster } from "@/components/common/Toast";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { InputWrapper } from "@/components/common/InputWrapper";
-import { ColorPicker } from "@/components/common/ColorPicker";
-import { Button } from "@/components/common/Button";
-import { PreviewModal } from "@/components/company/PreviewModal";
-import { ErrorBoundary } from "@/components/common/ErrorBoundary";
-import { SortableContentSection } from "@/components/company/SortableContentSection";
+import { Plus, ArrowLeft } from "lucide-react";
+import { useToast } from "@/hooks/useToast";
+import { companyService } from "@/services/company.service";
 import {
   companySettingsSchema,
   CompanySettingsFormData,
 } from "@/validations/companySettingsSchema";
-import { Plus, ArrowLeft } from "lucide-react";
+import { InputWrapper } from "@/components/common/InputWrapper";
+import { ColorPicker } from "@/components/common/ColorPicker";
+import { Button } from "@/components/common/Button";
+import { Toaster } from "@/components/common/Toast";
+import { PreviewModal } from "@/components/company/PreviewModal";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
+import { SortableContentSection } from "@/components/company/SortableContentSection";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants/messages";
-import { companyService } from "@/services/company.service";
 import {
   DndContext,
   closestCenter,
@@ -34,6 +34,9 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 
+/**
+ * Company settings page for managing branding and content
+ */
 export default function CompanySettingsPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -49,15 +52,21 @@ export default function CompanySettingsPage() {
     formState: { errors, isSubmitting },
   } = useForm<CompanySettingsFormData>({
     resolver: yupResolver(companySettingsSchema),
-    mode: "onBlur",
+    mode: "onChange",
     reValidateMode: "onChange",
     defaultValues: {
       name: "",
+      tagline: "",
       logoUrl: "",
       bannerUrl: "",
       primaryColor: "#4f46e5",
       cultureVideoUrl: "",
       contentSections: [],
+      benefitCards: [
+        { title: "", description: "" },
+        { title: "", description: "" },
+        { title: "", description: "" },
+      ],
     },
   });
 
@@ -70,11 +79,19 @@ export default function CompanySettingsPage() {
           // Populate form with fetched data
           reset({
             name: result.data.name || "",
+            tagline: result.data.tagline || "",
             logoUrl: result.data.logoUrl || "",
             bannerUrl: result.data.bannerUrl || "",
             primaryColor: result.data.primaryColor || "#4f46e5",
             cultureVideoUrl: result.data.cultureVideoUrl || "",
             contentSections: result.data.contentSections || [],
+            benefitCards: result.data.benefitCards && result.data.benefitCards.length === 3 
+              ? result.data.benefitCards 
+              : [
+                  { title: "", description: "" },
+                  { title: "", description: "" },
+                  { title: "", description: "" },
+                ],
           });
         } else {
           toast.error(result.error || ERROR_MESSAGES.FAILED_TO_LOAD);
@@ -91,6 +108,11 @@ export default function CompanySettingsPage() {
   const { fields, append, remove, move } = useFieldArray({
     control,
     name: "contentSections",
+  });
+
+  const { fields: benefitFields } = useFieldArray({
+    control,
+    name: "benefitCards",
   });
 
   const sensors = useSensors(
@@ -115,6 +137,9 @@ export default function CompanySettingsPage() {
 
     if (result.success) {
       toast.success(SUCCESS_MESSAGES.SETTINGS_SAVED);
+      setTimeout(() => {
+        router.push("/home");
+      }, 1500);
     } else {
       toast.error(result.error || ERROR_MESSAGES.FAILED_TO_LOAD);
     }
@@ -175,6 +200,14 @@ export default function CompanySettingsPage() {
             />
 
             <InputWrapper
+              label="Company Tagline"
+              type="text"
+              placeholder="Building the future, one hire at a time"
+              error={errors.tagline}
+              {...register("tagline")}
+            />
+
+            <InputWrapper
               label="Logo URL"
               type="url"
               placeholder="https://example.com/logo.png"
@@ -218,6 +251,39 @@ export default function CompanySettingsPage() {
               error={errors.cultureVideoUrl}
               {...register("cultureVideoUrl")}
             />
+          </div>
+
+          <div className="rounded-lg border p-4 md:p-6 space-y-4 md:space-y-6">
+            <h2 className="text-lg md:text-xl font-semibold">
+              Why Join Us Benefits (Required: 3 cards)
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Add three benefit cards that will be displayed on your careers page.
+            </p>
+
+            {benefitFields.map((field, index) => (
+              <div key={field.id} className="rounded-md border p-3 md:p-4 space-y-4 bg-background">
+                <h3 className="text-sm md:text-base font-medium">
+                  Benefit Card {index + 1}
+                </h3>
+
+                <InputWrapper
+                  label="Title"
+                  type="text"
+                  placeholder="Innovation First"
+                  error={errors.benefitCards?.[index]?.title}
+                  {...register(`benefitCards.${index}.title`)}
+                />
+
+                <InputWrapper
+                  label="Description"
+                  type="text"
+                  placeholder="Work on cutting-edge projects that push boundaries"
+                  error={errors.benefitCards?.[index]?.description}
+                  {...register(`benefitCards.${index}.description`)}
+                />
+              </div>
+            ))}
           </div>
 
           <div className="rounded-lg border p-4 md:p-6 space-y-4 md:space-y-6">
@@ -294,11 +360,16 @@ export default function CompanySettingsPage() {
           onClose={() => setIsPreviewOpen(false)}
           previewData={{
             name: watch("name") || "Your Company",
+            tagline: watch("tagline") || undefined,
             logoUrl: watch("logoUrl") || undefined,
             bannerUrl: watch("bannerUrl") || undefined,
             primaryColor: watch("primaryColor") || "#4f46e5",
             cultureVideoUrl: watch("cultureVideoUrl") || undefined,
-            contentSections: watch("contentSections") || [],
+            contentSections: (watch("contentSections") || []).map((section, index) => ({
+              ...section,
+              order: index,
+            })),
+            benefitCards: watch("benefitCards") || [],
           }}
         />
       </div>

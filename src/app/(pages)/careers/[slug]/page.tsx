@@ -1,21 +1,23 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Metadata } from "next";
-import { CareersPreview } from "@/components/company/CareersPreview";
 import { notFound } from "next/navigation";
 import connectDB from "@/lib/db";
 import Company from "@/lib/models/Company";
+import { CareersPreview } from "@/components/company/CareersPreview";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+/**
+ * Generates metadata for SEO and social sharing
+ */
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   await connectDB();
   const company = await Company.findOne({ slug }).lean();
 
-
-
-  const companyName = company?.name ;
+  const companyName = company?.name;
   const description = company?.contentSections?.[0]?.content?.substring(0, 160) || 
     `Join ${companyName}. Explore our open positions and become part of our team.`;
   
@@ -49,18 +51,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
+/**
+ * Renders the public careers page for a company
+ */
 export default async function CareersPage({ params }: PageProps) {
   const { slug } = await params;
-  console.log("LLLLLLLLLL", slug);
+  
   await connectDB();
   const company = await Company.findOne({ slug }).lean();
 
+  // Return 404 if company not found
   if (!company) {
     notFound();
   }
 
+  // Prepare company data for rendering
   const companyData = {
     name: company?.name || "",
+    tagline: company?.tagline || "",
     logoUrl: company?.logoUrl || "",
     bannerUrl: company?.bannerUrl || "",
     primaryColor: company?.primaryColor || "#4f46e5",
@@ -68,7 +76,12 @@ export default async function CareersPage({ params }: PageProps) {
     contentSections: (company?.contentSections || []).map((section: any) => ({
       title: section.title,
       content: section.content,
+      imageUrl: section.imageUrl,
       order: section.order,
+    })),
+    benefitCards: (company?.benefitCards || []).map((card: any) => ({
+      title: card.title,
+      description: card.description,
     })),
   };
 
@@ -92,11 +105,13 @@ export default async function CareersPage({ params }: PageProps) {
       />
       <CareersPreview
         name={companyData.name}
+        tagline={companyData.tagline}
         logoUrl={companyData.logoUrl}
         bannerUrl={companyData.bannerUrl}
         primaryColor={companyData.primaryColor}
         cultureVideoUrl={companyData.cultureVideoUrl}
         contentSections={companyData.contentSections}
+        benefitCards={companyData.benefitCards}
         isPreview={false}
       />
     </>
