@@ -77,16 +77,16 @@ Frontend (Next.js React) <-> API Routes <-> MongoDB
 9. Save and verify data persists 
 
 ### Candidate Flow
-1. Visit careers page without login         ✓
-2. See company branding (logo, banner, colors) ✓
-3. Watch culture video (tested YouTube URL) ✓
-4. Filter jobs by location ✓
-5. Filter jobs by job type ✓
-6. Search by job title ✓
-7. Search by department ✓
-8. Sort by latest/oldest ✓
-9. Infinite scroll loads more jobs ✓
-10. Mobile responsive on iPhone/Android ✓
+1. Visit careers page without login         
+2. See company branding (logo, banner, colors)
+3. Watch culture video (tested YouTube URL) 
+4. Filter jobs by location 
+5. Filter jobs by job type 
+6. Search by job title 
+7. Search by department 
+8. Sort by latest/oldest 
+9. Infinite scroll loads more jobs 
+10. Mobile responsive on iPhone/Android 
 
 ### Edge Cases
 1. Empty content sections (shows nothing) 

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getAuthToken, removeAuthToken } from "./auth";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_BASE_URL = process.env.NEXT_PUBLIC_SITE_URL;
 
 export const http = axios.create({
   baseURL: API_BASE_URL,

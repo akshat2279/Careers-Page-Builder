@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Settings, Copy, Check, ExternalLink, Sparkles, Rocket, Users } from "lucide-react";
+import { Settings, Copy, Check, ExternalLink, Sparkles, Rocket, Users, LogOut } from "lucide-react";
 import { useToast } from "@/hooks/useToast";
 import { companyService } from "@/services/company.service";
 import { getGreeting, getGreetingEmoji } from "@/utils/greeting";
@@ -59,10 +59,26 @@ export default function HomePage() {
     window.open(careersUrl, "_blank");
   };
 
+  const handleLogout = () => {
+    localStorage.clear();
+    router.push("/login");
+  };
+
   return (
     <>
       <Toaster />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+        {/* Logout Button */}
+        <div className="absolute top-4 right-4 z-10">
+          <Button
+            variant="outline"
+            onClick={handleLogout}
+            className="flex items-center gap-2 hover:bg-red-50 dark:hover:bg-red-950 hover:text-red-600 dark:hover:text-red-400 hover:border-red-300"
+          >
+            <LogOut className="h-4 w-4" />
+            Logout
+          </Button>
+        </div>
         {/* Hero Section */}
         <div className="relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10" />

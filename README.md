@@ -1,7 +1,3 @@
-# Careers Page Builder
-
-This is a take-home assignment project that lets companies create branded careers pages and allows candidates to browse jobs.
-
 ## What I Built
 
 Basically two main parts:
@@ -11,7 +7,7 @@ Basically two main parts:
 ## Tech Stack
 
 - Next.js 16 with App Router
-- React 19
+- React
 - MongoDB + Mongoose
 - TypeScript
 - Tailwind CSS
@@ -26,11 +22,10 @@ cd my-app
 npm install
 ```
 
-2. Create `.env.local` file:
+2. Create `.env` file:
 ```
 MONGODB_URI=your_mongodb_connection_string
 JWT_SECRET=some_random_secret_key
-NEXT_PUBLIC_API_URL=http://localhost:3000
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
@@ -60,4 +55,3 @@ Go to http://localhost:3000
 
 Deployed on Vercel. Just connected the repo and added environment variables in Vercel dashboard.
 
-Live URL: [Add your Vercel URL here]
