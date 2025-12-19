@@ -5,26 +5,22 @@ import connectDB from "@/lib/db";
 import Company from "@/lib/models/Company";
 
 interface PageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
   await connectDB();
-  const company = await Company.findOne({ slug: params.slug }).lean();
+  const company = await Company.findOne({ slug }).lean();
 
-  if (!company) {
-    return {
-      title: "Company Not Found",
-      description: "The company you're looking for doesn't exist.",
-    };
-  }
 
-  const companyName = company.name || "Company";
-  const description = company.contentSections?.[0]?.content?.substring(0, 160) || 
+
+  const companyName = company?.name ;
+  const description = company?.contentSections?.[0]?.content?.substring(0, 160) || 
     `Join ${companyName}. Explore our open positions and become part of our team.`;
   
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-  const pageUrl = `${siteUrl}/careers/${params.slug}`;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  const pageUrl = `${siteUrl}/careers/${slug}`;
 
   return {
     title: `Careers at ${companyName} | Jobs & Opportunities`,
@@ -34,14 +30,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       type: "website",
       url: pageUrl,
-      images: company.bannerUrl ? [{ url: company.bannerUrl }] : [],
+      images: company?.bannerUrl ? [{ url: company?.bannerUrl }] : [],
       siteName: companyName,
     },
     twitter: {
       card: "summary_large_image",
       title: `Careers at ${companyName}`,
       description,
-      images: company.bannerUrl ? [company.bannerUrl] : [],
+      images: company?.bannerUrl ? [company?.bannerUrl] : [],
     },
     robots: {
       index: true,
@@ -54,24 +50,30 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function CareersPage({ params }: PageProps) {
+  const { slug } = await params;
+  console.log("LLLLLLLLLL", slug);
   await connectDB();
-  const company = await Company.findOne({ slug: params.slug }).lean();
+  const company = await Company.findOne({ slug }).lean();
 
   if (!company) {
     notFound();
   }
 
   const companyData = {
-    name: company.name,
-    logoUrl: company.logoUrl,
-    bannerUrl: company.bannerUrl,
-    primaryColor: company.primaryColor,
-    cultureVideoUrl: company.cultureVideoUrl,
-    contentSections: company.contentSections || [],
+    name: company?.name || "",
+    logoUrl: company?.logoUrl || "",
+    bannerUrl: company?.bannerUrl || "",
+    primaryColor: company?.primaryColor || "#4f46e5",
+    cultureVideoUrl: company?.cultureVideoUrl || "",
+    contentSections: (company?.contentSections || []).map((section: any) => ({
+      title: section.title,
+      content: section.content,
+      order: section.order,
+    })),
   };
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ;
-  const pageUrl = `${siteUrl}/careers/${params.slug}`;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  const pageUrl = `${siteUrl}/careers/${slug}`;
 
   return (
     <>

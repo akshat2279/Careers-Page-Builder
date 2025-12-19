@@ -13,14 +13,26 @@ export function RouteGuard({ children }: RouteGuardProps) {
   const pathname = usePathname();
   const isPublic = isPublicRoute(pathname);
   const loggedIn = isAuthenticated();
+  const isCareersPage = pathname.startsWith("/careers/");
 
   useEffect(() => {
+    // Careers pages are accessible to everyone
+    if (isCareersPage) {
+      return;
+    }
+
+    // Redirect logged-in users from login/signup to home
     if (isPublic && loggedIn) {
       router.push(ROUTES.HOME);
     } else if (!isPublic && !loggedIn) {
       router.push(ROUTES.LOGIN);
     }
-  }, [pathname, router, isPublic, loggedIn]);
+  }, [pathname, router, isPublic, loggedIn, isCareersPage]);
+
+  // Allow careers pages for everyone
+  if (isCareersPage) {
+    return <>{children}</>;
+  }
 
   if ((isPublic && loggedIn) || (!isPublic && !loggedIn)) {
     return null;

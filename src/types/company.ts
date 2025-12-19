@@ -6,6 +6,7 @@ export type ContentSection = {
 
 export type CompanyData = {
   name: string;
+  slug?: string;
   logoUrl?: string;
   bannerUrl?: string;
   primaryColor: string;

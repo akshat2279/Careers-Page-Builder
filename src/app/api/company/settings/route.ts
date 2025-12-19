@@ -48,6 +48,7 @@ export async function POST(req: Request) {
       order: index,
     })) || [];
 
+
     const company = await Company.findByIdAndUpdate(
       decoded.companyId,
       {
