@@ -4,6 +4,7 @@ export const ROUTES = {
   HOME: "/home",
   LOGIN: "/login",
   SIGNUP: "/signup",
+  COMPANY_SETTINGS: "/company-settings",
 } as const;
 
 const PUBLIC_ROUTES = [ROUTES.LOGIN, ROUTES.SIGNUP];

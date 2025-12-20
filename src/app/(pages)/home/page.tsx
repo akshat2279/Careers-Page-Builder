@@ -3,11 +3,14 @@
 import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Settings, Copy, Check, ExternalLink, Sparkles, Rocket, Users, LogOut } from "lucide-react";
+
+import { Button } from "@/components/common/Button";
+import { Toaster } from "@/components/common/Toast";
+import { UI_TEXT } from "@/constants/uiText";
+import { ROUTES } from "@/config/routes";
 import { useToast } from "@/hooks/useToast";
 import { companyService } from "@/services/company.service";
 import { getGreeting, getGreetingEmoji } from "@/utils/greeting";
-import { Button } from "@/components/common/Button";
-import { Toaster } from "@/components/common/Toast";
 
 /**
  * Home page with company dashboard and career page link
@@ -47,10 +50,10 @@ export default function HomePage() {
     try {
       await navigator.clipboard.writeText(careersUrl);
       setCopied(true);
-      toast.success("Careers page link copied to clipboard!");
+      toast.success(UI_TEXT.HOME.TOAST.COPY_SUCCESS);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error("Failed to copy link");
+      toast.error(UI_TEXT.HOME.TOAST.COPY_ERROR);
     }
   };
 
@@ -61,7 +64,7 @@ export default function HomePage() {
 
   const handleLogout = () => {
     localStorage.clear();
-    router.push("/login");
+    router.push(ROUTES.LOGIN);
   };
 
   return (
@@ -76,7 +79,7 @@ export default function HomePage() {
             className="flex items-center gap-2 hover:bg-red-50 dark:hover:bg-red-950 hover:text-red-600 dark:hover:text-red-400 hover:border-red-300"
           >
             <LogOut className="h-4 w-4" />
-            Logout
+            {UI_TEXT.HOME.LOGOUT_BUTTON}
           </Button>
         </div>
         {/* Hero Section */}
@@ -90,7 +93,7 @@ export default function HomePage() {
               <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-3">
                 {greeting}
               </h1>
-              <p className="text-lg text-muted-foreground">Manage your careers page and attract top talent</p>
+              <p className="text-lg text-muted-foreground">{UI_TEXT.HOME.SUBTITLE}</p>
             </div>
           </div>
         </div>
@@ -107,9 +110,9 @@ export default function HomePage() {
                   <div className="p-2 rounded-lg bg-indigo-500/10">
                     <Sparkles className="h-5 w-5 text-indigo-600" />
                   </div>
-                  <h3 className="font-semibold">Beautiful Design</h3>
+                  <h3 className="font-semibold">{UI_TEXT.HOME.STATS.BEAUTIFUL_DESIGN_TITLE}</h3>
                 </div>
-                <p className="text-sm text-muted-foreground">Create stunning career pages</p>
+                <p className="text-sm text-muted-foreground">{UI_TEXT.HOME.STATS.BEAUTIFUL_DESIGN_DESC}</p>
               </div>
             </div>
 
@@ -120,9 +123,9 @@ export default function HomePage() {
                   <div className="p-2 rounded-lg bg-purple-500/10">
                     <Rocket className="h-5 w-5 text-purple-600" />
                   </div>
-                  <h3 className="font-semibold">Quick Setup</h3>
+                  <h3 className="font-semibold">{UI_TEXT.HOME.STATS.QUICK_SETUP_TITLE}</h3>
                 </div>
-                <p className="text-sm text-muted-foreground">Get started in minutes</p>
+                <p className="text-sm text-muted-foreground">{UI_TEXT.HOME.STATS.QUICK_SETUP_DESC}</p>
               </div>
             </div>
 
@@ -133,9 +136,9 @@ export default function HomePage() {
                   <div className="p-2 rounded-lg bg-pink-500/10">
                     <Users className="h-5 w-5 text-pink-600" />
                   </div>
-                  <h3 className="font-semibold">Attract Talent</h3>
+                  <h3 className="font-semibold">{UI_TEXT.HOME.STATS.ATTRACT_TALENT_TITLE}</h3>
                 </div>
-                <p className="text-sm text-muted-foreground">Build your dream team</p>
+                <p className="text-sm text-muted-foreground">{UI_TEXT.HOME.STATS.ATTRACT_TALENT_DESC}</p>
               </div>
             </div>
           </div>
@@ -147,7 +150,7 @@ export default function HomePage() {
                 <div className="p-2 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500">
                   <ExternalLink className="h-5 w-5 text-white" />
                 </div>
-                <h2 className="text-xl font-bold">Your Careers Page</h2>
+                <h2 className="text-xl font-bold">{UI_TEXT.HOME.CAREERS_PAGE.TITLE}</h2>
               </div>
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="flex-1">
@@ -162,7 +165,7 @@ export default function HomePage() {
                     className="flex items-center gap-2 hover:bg-indigo-50 dark:hover:bg-indigo-950"
                   >
                     <ExternalLink className="h-4 w-4" />
-                    View
+                    {UI_TEXT.HOME.CAREERS_PAGE.VIEW_BUTTON}
                   </Button>
                   <Button
                     variant="default"
@@ -172,12 +175,12 @@ export default function HomePage() {
                     {copied ? (
                       <>
                         <Check className="h-4 w-4" />
-                        Copied!
+                        {UI_TEXT.HOME.CAREERS_PAGE.COPIED_BUTTON}
                       </>
                     ) : (
                       <>
                         <Copy className="h-4 w-4" />
-                        Copy Link
+                        {UI_TEXT.HOME.CAREERS_PAGE.COPY_BUTTON}
                       </>
                     )}
                   </Button>
@@ -188,16 +191,16 @@ export default function HomePage() {
 
           {/* Action Card */}
           <div className="rounded-xl border bg-card p-8 shadow-sm">
-            <h2 className="text-xl font-bold mb-4">Customize Your Careers Page</h2>
+            <h2 className="text-xl font-bold mb-4">{UI_TEXT.HOME.CUSTOMIZE.TITLE}</h2>
             <p className="text-muted-foreground mb-6">
-              Update your company branding, add content sections, and showcase your culture to attract the best candidates.
+              {UI_TEXT.HOME.CUSTOMIZE.DESCRIPTION}
             </p>
             <Button
-              onClick={() => router.push("/company-settings")}
+              onClick={() => router.push(ROUTES.COMPANY_SETTINGS)}
               className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
             >
               <Settings className="h-4 w-4 mr-2" />
-              Edit Company Details
+              {UI_TEXT.HOME.CUSTOMIZE.BUTTON}
             </Button>
           </div>
         </div>

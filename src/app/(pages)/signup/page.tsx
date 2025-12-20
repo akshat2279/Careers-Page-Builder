@@ -4,12 +4,16 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { authService } from "@/services/auth.service";
-import { signupSchema } from "@/validations/signupSchema";
-import { InputWrapper } from "@/components/common/InputWrapper";
+
 import { Button } from "@/components/common/Button";
+import { InputWrapper } from "@/components/common/InputWrapper";
 import { GradientHero } from "@/components/ui/GradientHero";
 import { ERROR_MESSAGES } from "@/constants/messages";
+import { UI_TEXT } from "@/constants/uiText";
+import { ROUTES } from "@/config/routes";
+import { authService } from "@/services/auth.service";
+import { signupSchema } from "@/validations/signupSchema";
+
 import type { SignupFormData } from "@/types/auth";
 
 /**
@@ -40,9 +44,9 @@ export default function SignupPage() {
       );
 
       if (response.success) {
-        router.push("/login");
+        router.push(ROUTES.LOGIN);
       } else {
-        setError(response.error || "Signup failed");
+        setError(response.error || ERROR_MESSAGES.SOMETHING_WENT_WRONG);
       }
     } catch {
       setError(ERROR_MESSAGES.SOMETHING_WENT_WRONG);
@@ -60,9 +64,9 @@ export default function SignupPage() {
       <div className="flex w-full lg:w-1/2 items-center justify-center bg-background p-4">
         <div className="w-full max-w-md space-y-6 md:space-y-8 rounded-lg border p-6 md:p-8 shadow-sm">
         <div className="text-center">
-          <h1 className="text-2xl font-bold tracking-tight">Create Account</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{UI_TEXT.SIGNUP.TITLE}</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Sign up to get started
+            {UI_TEXT.SIGNUP.SUBTITLE}
           </p>
         </div>
 
@@ -74,38 +78,38 @@ export default function SignupPage() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <InputWrapper
-            label="Company Name"
+            label={UI_TEXT.SIGNUP.COMPANY_NAME_LABEL}
             type="text"
-            placeholder="Acme Inc."
+            placeholder={UI_TEXT.SIGNUP.COMPANY_NAME_PLACEHOLDER}
             error={errors.companyName}
             {...register("companyName")}
           />
 
           <InputWrapper
-            label="Email"
+            label={UI_TEXT.SIGNUP.EMAIL_LABEL}
             type="email"
-            placeholder="you@example.com"
+            placeholder={UI_TEXT.SIGNUP.EMAIL_PLACEHOLDER}
             error={errors.email}
             {...register("email")}
           />
 
           <InputWrapper
-            label="Password"
+            label={UI_TEXT.SIGNUP.PASSWORD_LABEL}
             type="password"
-            placeholder="••••••••"
+            placeholder={UI_TEXT.SIGNUP.PASSWORD_PLACEHOLDER}
             error={errors.password}
             {...register("password")}
           />
 
           <Button type="submit" className="w-full" isLoading={isSubmitting}>
-            Sign Up
+            {UI_TEXT.SIGNUP.SUBMIT_BUTTON}
           </Button>
         </form>
 
         <p className="text-center text-sm text-muted-foreground">
-          Already have an account?{" "}
-          <a href="/login" className="font-medium text-primary hover:underline">
-            Sign in
+          {UI_TEXT.SIGNUP.HAVE_ACCOUNT}{" "}
+          <a href={ROUTES.LOGIN} className="font-medium text-primary hover:underline">
+            {UI_TEXT.SIGNUP.LOGIN_LINK}
           </a>
         </p>
         </div>

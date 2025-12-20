@@ -1,19 +1,21 @@
 import * as yup from "yup";
+import { VALIDATION_MESSAGES } from "@/constants/validationMessages";
+import { HEX_COLOR_REGEX } from "@/utils/constanst";
 
 const contentSectionSchema = yup.object().shape({
   title: yup
     .string()
-    .required("Section title is required")
-    .min(3, "Title must be at least 3 characters")
-    .max(500, "Title must not exceed 500 characters"),
+    .required(VALIDATION_MESSAGES.SECTION_TITLE_REQUIRED)
+    .min(3, VALIDATION_MESSAGES.SECTION_TITLE_MIN)
+    .max(500, VALIDATION_MESSAGES.SECTION_TITLE_MAX),
   content: yup
     .string()
-    .required("Section content is required")
-    .min(10, "Content must be at least 10 characters")
-    .max(1000, "Content must not exceed 1000 characters"),
+    .required(VALIDATION_MESSAGES.SECTION_CONTENT_REQUIRED)
+    .min(10, VALIDATION_MESSAGES.SECTION_CONTENT_MIN)
+    .max(1000, VALIDATION_MESSAGES.SECTION_CONTENT_MAX),
   imageUrl: yup
     .string()
-    .url("Please enter a valid URL")
+    .url(VALIDATION_MESSAGES.URL_INVALID)
     .transform((value) => (value === "" ? undefined : value))
     .optional(),
   order: yup.number().required(),
@@ -22,49 +24,49 @@ const contentSectionSchema = yup.object().shape({
 const benefitCardSchema = yup.object().shape({
   title: yup
     .string()
-    .required("Benefit title is required")
-    .min(3, "Title must be at least 3 characters")
-    .max(100, "Title must not exceed 100 characters"),
+    .required(VALIDATION_MESSAGES.BENEFIT_TITLE_REQUIRED)
+    .min(3, VALIDATION_MESSAGES.BENEFIT_TITLE_MIN)
+    .max(100, VALIDATION_MESSAGES.BENEFIT_TITLE_MAX),
   description: yup
     .string()
-    .required("Benefit description is required")
-    .min(10, "Description must be at least 10 characters")
-    .max(200, "Description must not exceed 200 characters"),
+    .required(VALIDATION_MESSAGES.BENEFIT_DESCRIPTION_REQUIRED)
+    .min(10, VALIDATION_MESSAGES.BENEFIT_DESCRIPTION_MIN)
+    .max(200, VALIDATION_MESSAGES.BENEFIT_DESCRIPTION_MAX),
 });
 
 export const companySettingsSchema = yup.object({
   name: yup
     .string()
-    .required("Company name is required")
-    .min(2, "Company name must be at least 2 characters")
-    .max(100, "Company name must not exceed 100 characters"),
+    .required(VALIDATION_MESSAGES.COMPANY_NAME_REQUIRED)
+    .min(2, VALIDATION_MESSAGES.COMPANY_NAME_MIN)
+    .max(100, VALIDATION_MESSAGES.COMPANY_NAME_MAX),
   tagline: yup
     .string()
     .transform((value) => (value === "" ? "" : value))
-    .max(200, "Tagline must not exceed 200 characters")
+    .max(200, VALIDATION_MESSAGES.TAGLINE_MAX)
     .default(""),
   logoUrl: yup
     .string()
-    .url("Please enter a valid URL")
+    .url(VALIDATION_MESSAGES.URL_INVALID)
     .transform((value) => (value === "" ? "" : value))
     .default(""),
   bannerUrl: yup
     .string()
-    .url("Please enter a valid URL")
+    .url(VALIDATION_MESSAGES.URL_INVALID)
     .transform((value) => (value === "" ? "" : value))
     .default(""),
   primaryColor: yup
     .string()
-    .required("Primary color is required")
-    .matches(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Please enter a valid hex color"),
+    .required(VALIDATION_MESSAGES.PRIMARY_COLOR_REQUIRED)
+    .matches(HEX_COLOR_REGEX, VALIDATION_MESSAGES.PRIMARY_COLOR_INVALID),
  
   cultureVideoUrl: yup
     .string()
-    .url("Please enter a valid URL")
+    .url(VALIDATION_MESSAGES.URL_INVALID)
     .transform((value) => (value === "" ? "" : value))
     .default(""),
   contentSections: yup.array().of(contentSectionSchema).default([]),
-  benefitCards: yup.array().of(benefitCardSchema).min(3, "Please add exactly 3 benefit cards").max(3, "Please add exactly 3 benefit cards").required("Benefit cards are required"),
+  benefitCards: yup.array().of(benefitCardSchema).min(3, VALIDATION_MESSAGES.BENEFIT_CARDS_EXACT).max(3, VALIDATION_MESSAGES.BENEFIT_CARDS_EXACT).required(VALIDATION_MESSAGES.BENEFIT_CARDS_REQUIRED),
 });
 
 export type CompanySettingsFormData = yup.InferType<typeof companySettingsSchema>;

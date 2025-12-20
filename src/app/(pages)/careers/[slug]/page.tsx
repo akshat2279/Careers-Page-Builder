@@ -1,54 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import connectDB from "@/lib/db";
 import Company from "@/lib/models/Company";
 import { CareersPreview } from "@/components/company/CareersPreview";
+import { generateCareerMetadata } from "@/lib/helpers";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-/**
- * Generates metadata for SEO and social sharing
- */
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
-  await connectDB();
-  const company = await Company.findOne({ slug }).lean();
-
-  const companyName = company?.name;
-  const description = company?.contentSections?.[0]?.content?.substring(0, 160) || 
-    `Join ${companyName}. Explore our open positions and become part of our team.`;
-  
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
-  const pageUrl = `${siteUrl}/careers/${slug}`;
-
-  return {
-    title: `Careers at ${companyName} | Jobs & Opportunities`,
-    description,
-    openGraph: {
-      title: `Careers at ${companyName}`,
-      description,
-      type: "website",
-      url: pageUrl,
-      images: company?.bannerUrl ? [{ url: company?.bannerUrl }] : [],
-      siteName: companyName,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `Careers at ${companyName}`,
-      description,
-      images: company?.bannerUrl ? [company?.bannerUrl] : [],
-    },
-    robots: {
-      index: true,
-      follow: true,
-    },
-    alternates: {
-      canonical: pageUrl,
-    },
-  };
+  return generateCareerMetadata(slug);
 }
 
 /**
