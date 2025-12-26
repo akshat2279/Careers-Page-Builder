@@ -51,6 +51,12 @@ Go to http://localhost:3000
 - Video embed support (YouTube, Vimeo, S3)
 
 
+
+
+
+
+
+
 ## Deployment
 
 Deployed on Vercel. Just connected the repo and added environment variables in Vercel dashboard.
